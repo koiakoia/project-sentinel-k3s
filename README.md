@@ -1,8 +1,3 @@
-# Project Sentinel Network Architecture
-
-### Hybrid Cloud Routing Diagram
-
-```mermaid
 graph TD
     %% --- Styles ---
     classDef user fill:#fff,stroke:#333,stroke-width:2px;
@@ -31,15 +26,15 @@ graph TD
         subgraph Hardware [Hardware Allocation]
             style Hardware fill:#eeeeee,stroke:#9e9e9e
             
-            NodeGPU[Node-GPU <br/> NVIDIA RTX 3060 Ti <br/> (Passthrough)]:::hardware
-            NodeCPU[Node-Compute <br/> Intel AVX-512 <br/> (Vector Search)]:::hardware
+            NodeGPU[Node-GPU \n NVIDIA RTX 3060 Ti \n (Passthrough)]:::hardware
+            NodeCPU[Node-Compute \n Intel AVX-512 \n (Vector Search)]:::hardware
         end
 
         LocalService -->|Run Model| NodeGPU
         LocalService -->|Embeddings| NodeCPU
         
         %% Storage
-        NodeGPU -.->|Persistent Storage| NAS[(TrueNAS Core <br/> NFS)]:::hardware
+        NodeGPU -.->|Persistent Storage| NAS[(TrueNAS Core \n NFS)]:::hardware
     end
 
     %% --- The Public Cloud ---
