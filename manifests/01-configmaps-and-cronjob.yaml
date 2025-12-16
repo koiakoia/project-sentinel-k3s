@@ -1,140 +1,123 @@
 apiVersion: v1
-items:
-- apiVersion: v1
-  data:
-    config.yaml: "model_list:\n  - model_name: llama3.1\n    litellm_params:\n      model:
-      ollama/llama3.1\n      api_base: \"http://ollama.sentinel.svc.cluster.local:11434\"\n
-      \     num_ctx: 16384 \n  - model_name: gemini-stable-cloud\n    litellm_params:\n
-      \     model: gemini/gemini-pro\n      api_base: \"https://generativelanguage.googleapis.com\"\n
-      \     api_key: os.environ/GEMINI_API_KEY\n"
-  kind: ConfigMap
-  metadata:
-    annotations:
-      kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"v1","data":{"config.yaml":"model_list:\n  - model_name: llama3.1\n    litellm_params:\n      model: ollama/llama3.1\n      api_base: \"http://ollama.sentinel.svc.cluster.local:11434\"\n      num_ctx: 16384 \n  - model_name: gemini-stable-cloud\n    litellm_params:\n      model: gemini/gemini-pro\n      api_base: \"https://generativelanguage.googleapis.com\"\n      api_key: os.environ/GEMINI_API_KEY\n"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"litellm-config","namespace":"sentinel"}}
-    creationTimestamp: "2025-12-16T12:45:51Z"
-    name: litellm-config
-    namespace: sentinel
-    resourceVersion: "62321"
-    uid: 970d0265-93c7-4912-9005-aecf4d711c4d
-- apiVersion: v1
-  data:
-    sync.py: "import requests\nimport os\nimport sys\nimport json\n\n# --- CONFIGURATION
-      ---\nPAPERLESS_URL = \"http://paperless-web.sentinel.svc.cluster.local:80\"\nWEBUI_URL
-      = \"http://open-webui-service.sentinel.svc.cluster.local:80\"\n\n# --- AUTHENTICATION
-      ---\nPAPERLESS_TOKEN = \"48f16b10207d9f0ef48d82d04756e7e5bbb9511e\"\n# Your
-      JWT Token\nWEBUI_KEY = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU2YmY0NGRjLWM5MTgtNDAxMi1iMDNhLWYyODFjMWFlNzYzOSIsImV4cCI6MTc2ODMxMzk2MSwianRpIjoiZGEzOWNlMzYtYWNiOS00OGI5LTllMWItYmFhNDg1YTJlNzUyIn0.h49ZjTKhr-GwZz7RBovlYIL0qSzBMlpf4u_kMRMBafk\"\n\nheaders_pl
-      = {\"Authorization\": f\"Token {PAPERLESS_TOKEN}\"}\nheaders_web = {\"Authorization\":
-      f\"Bearer {WEBUI_KEY}\", \"Content-Type\": \"application/json\"}\n\ndef get_or_create_collection():\n
-      \   # Check if collection exists\n    try:\n        resp = requests.get(f\"{WEBUI_URL}/api/v1/knowledge/\",
-      headers=headers_web)\n        if resp.status_code == 200:\n            results
-      = resp.json()\n            if isinstance(results, list):\n                for
-      item in results:\n                    if item.get('name') == \"Paperless\":\n
-      \                       return item['id']\n            elif isinstance(results,
-      dict) and 'data' in results:\n                 for item in results['data']:\n
-      \                   if item.get('name') == \"Paperless\":\n                        return
-      item['id']\n    except Exception:\n        pass\n\n    # Create if missing\n
-      \   print(f\"[INFO] Creating 'Paperless' Knowledge Base...\")\n    payload =
-      {\"name\": \"Paperless\", \"description\": \"Auto-synced from Paperless-ngx\"}\n
-      \   resp = requests.post(f\"{WEBUI_URL}/api/v1/knowledge/create\", headers=headers_web,
-      json=payload)\n    if resp.status_code == 200:\n        return resp.json().get('id')\n
-      \   sys.exit(1)\n\ndef sync():\n    print(f\"--- BRIDGE V4: SYNCING ---\")\n
-      \   KNOWLEDGE_ID = get_or_create_collection()\n\n    # Get Paperless Docs\n
-      \   resp = requests.get(f\"{PAPERLESS_URL}/api/documents/\", headers=headers_pl)\n
-      \   docs = resp.json().get('results', [])\n    print(f\"[INFO] Found {len(docs)}
-      documents.\")\n\n    count = 0\n    for doc in docs:\n        title = doc['title']\n
-      \       doc_id = doc['id']\n        safe_title = \"\".join([c for c in title
-      if c.isalnum() or c in (' ', '.', '-', '_')]).strip()\n        filename = f\"{safe_title}_{doc_id}.pdf\"\n
-      \       \n        print(f\"Processing: {filename}...\")\n\n        # Download\n
-      \       download_url = f\"{PAPERLESS_URL}/api/documents/{doc_id}/download/\"\n
-      \       file_resp = requests.get(download_url, headers=headers_pl)\n        \n
-      \       if file_resp.status_code == 200:\n            # Upload\n            headers_upload
-      = headers_web.copy()\n            headers_upload.pop(\"Content-Type\")\n            files
-      = {'file': (filename, file_resp.content)}\n            \n            web_resp
-      = requests.post(f\"{WEBUI_URL}/api/v1/files/\", headers=headers_upload, files=files)\n
-      \           \n            if web_resp.status_code == 200:\n                file_id
-      = web_resp.json().get('id')\n                \n                # Link to Knowledge
-      Base\n                link_resp = requests.post(\n                    f\"{WEBUI_URL}/api/v1/knowledge/{KNOWLEDGE_ID}/file/add\",\n
-      \                   headers=headers_web,\n                    json={\"file_id\":
-      file_id}\n                )\n                if link_resp.status_code == 200:\n
-      \                   print(f\"  -> [SUCCESS] Ingested into Brain.\")\n                    count
-      += 1\n        else:\n            print(f\"  -> [FAIL] Download failed.\")\n
-      \   \n    print(f\"--- SYNC COMPLETE: {count} Ingested ---\")\n\nif __name__
-      == \"__main__\":\n    sync()\n"
-  kind: ConfigMap
-  metadata:
-    annotations:
-      kubectl.kubernetes.io/last-applied-configuration: |
-        {"apiVersion":"v1","data":{"sync.py":"import requests\nimport os\nimport sys\nimport json\n\n# --- CONFIGURATION ---\nPAPERLESS_URL = \"http://paperless-web.sentinel.svc.cluster.local:80\"\nWEBUI_URL = \"http://open-webui-service.sentinel.svc.cluster.local:80\"\n\n# --- AUTHENTICATION ---\nPAPERLESS_TOKEN = \"48f16b10207d9f0ef48d82d04756e7e5bbb9511e\"\n# Your JWT Token\nWEBUI_KEY = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU2YmY0NGRjLWM5MTgtNDAxMi1iMDNhLWYyODFjMWFlNzYzOSIsImV4cCI6MTc2ODMxMzk2MSwianRpIjoiZGEzOWNlMzYtYWNiOS00OGI5LTllMWItYmFhNDg1YTJlNzUyIn0.h49ZjTKhr-GwZz7RBovlYIL0qSzBMlpf4u_kMRMBafk\"\n\nheaders_pl = {\"Authorization\": f\"Token {PAPERLESS_TOKEN}\"}\nheaders_web = {\"Authorization\": f\"Bearer {WEBUI_KEY}\", \"Content-Type\": \"application/json\"}\n\ndef get_or_create_collection():\n    # Check if collection exists\n    try:\n        resp = requests.get(f\"{WEBUI_URL}/api/v1/knowledge/\", headers=headers_web)\n        if resp.status_code == 200:\n            results = resp.json()\n            if isinstance(results, list):\n                for item in results:\n                    if item.get('name') == \"Paperless\":\n                        return item['id']\n            elif isinstance(results, dict) and 'data' in results:\n                 for item in results['data']:\n                    if item.get('name') == \"Paperless\":\n                        return item['id']\n    except Exception:\n        pass\n\n    # Create if missing\n    print(f\"[INFO] Creating 'Paperless' Knowledge Base...\")\n    payload = {\"name\": \"Paperless\", \"description\": \"Auto-synced from Paperless-ngx\"}\n    resp = requests.post(f\"{WEBUI_URL}/api/v1/knowledge/create\", headers=headers_web, json=payload)\n    if resp.status_code == 200:\n        return resp.json().get('id')\n    sys.exit(1)\n\ndef sync():\n    print(f\"--- BRIDGE V4: SYNCING ---\")\n    KNOWLEDGE_ID = get_or_create_collection()\n\n    # Get Paperless Docs\n    resp = requests.get(f\"{PAPERLESS_URL}/api/documents/\", headers=headers_pl)\n    docs = resp.json().get('results', [])\n    print(f\"[INFO] Found {len(docs)} documents.\")\n\n    count = 0\n    for doc in docs:\n        title = doc['title']\n        doc_id = doc['id']\n        safe_title = \"\".join([c for c in title if c.isalnum() or c in (' ', '.', '-', '_')]).strip()\n        filename = f\"{safe_title}_{doc_id}.pdf\"\n        \n        print(f\"Processing: {filename}...\")\n\n        # Download\n        download_url = f\"{PAPERLESS_URL}/api/documents/{doc_id}/download/\"\n        file_resp = requests.get(download_url, headers=headers_pl)\n        \n        if file_resp.status_code == 200:\n            # Upload\n            headers_upload = headers_web.copy()\n            headers_upload.pop(\"Content-Type\")\n            files = {'file': (filename, file_resp.content)}\n            \n            web_resp = requests.post(f\"{WEBUI_URL}/api/v1/files/\", headers=headers_upload, files=files)\n            \n            if web_resp.status_code == 200:\n                file_id = web_resp.json().get('id')\n                \n                # Link to Knowledge Base\n                link_resp = requests.post(\n                    f\"{WEBUI_URL}/api/v1/knowledge/{KNOWLEDGE_ID}/file/add\",\n                    headers=headers_web,\n                    json={\"file_id\": file_id}\n                )\n                if link_resp.status_code == 200:\n                    print(f\"  -\u003e [SUCCESS] Ingested into Brain.\")\n                    count += 1\n        else:\n            print(f\"  -\u003e [FAIL] Download failed.\")\n    \n    print(f\"--- SYNC COMPLETE: {count} Ingested ---\")\n\nif __name__ == \"__main__\":\n    sync()\n"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"sentinel-bridge-script","namespace":"sentinel"}}
-    creationTimestamp: "2025-12-16T14:28:08Z"
-    name: sentinel-bridge-script
-    namespace: sentinel
-    resourceVersion: "57646"
-    uid: edc18836-2524-41b3-890f-ddbbf807a3ed
-kind: List
+kind: ConfigMap
 metadata:
-  resourceVersion: ""
+  name: litellm-config
+  namespace: sentinel
+data:
+  config.yaml: |-
+    model_list:
+      - model_name: llama3.1
+        litellm_params:
+          model: ollama/llama3.1
+          api_base: "http://ollama.sentinel.svc.cluster.local:11434"
+          num_ctx: 16384
+      - model_name: gemini-stable-cloud
+        litellm_params:
+          model: gemini/gemini-pro
+          api_base: "https://generativelanguage.googleapis.com"
+          api_key: os.environ/GEMINI_API_KEY
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"batch/v1","kind":"CronJob","metadata":{"annotations":{},"name":"sentinel-bridge-job","namespace":"sentinel"},"spec":{"failedJobsHistoryLimit":1,"jobTemplate":{"spec":{"template":{"spec":{"containers":[{"args":["pip install requests \u0026\u0026 python /app/sync.py"],"command":["/bin/sh","-c"],"image":"python:3.11-slim","name":"bridge","volumeMounts":[{"mountPath":"/app/sync.py","name":"script-vol","subPath":"sync.py"}]}],"nodeSelector":{"special.cpu":"avx512"},"restartPolicy":"OnFailure","volumes":[{"configMap":{"name":"sentinel-bridge-script"},"name":"script-vol"}]}}}},"schedule":"*/10 * * * *","successfulJobsHistoryLimit":1}}
-  creationTimestamp: "2025-12-16T14:28:08Z"
-  generation: 1
-  name: sentinel-bridge-job
+  name: paperless-sync-job
   namespace: sentinel
-  resourceVersion: "63258"
-  uid: 6c562035-2063-474c-974c-edb718d6c820
 spec:
-  concurrencyPolicy: Allow
+  schedule: "*/15 * * * *"  # Runs every 15 minutes
+  successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
-    metadata:
-      creationTimestamp: null
     spec:
       template:
-        metadata:
-          creationTimestamp: null
         spec:
           containers:
-          - args:
-            - pip install requests && python /app/sync.py
+          - name: syncer
+            image: python:3.12-slim
             command:
-            - /bin/sh
+            - /bin/bash
             - -c
-            image: python:3.11-slim
-            imagePullPolicy: IfNotPresent
-            name: bridge
-            resources: {}
-            terminationMessagePath: /dev/termination-log
-            terminationMessagePolicy: File
-            volumeMounts:
-            - mountPath: /app/sync.py
-              name: script-vol
-              subPath: sync.py
-          dnsPolicy: ClusterFirst
-          nodeSelector:
-            special.cpu: avx512
+            - |
+              pip install requests >/dev/null 2>&1
+              python -c '
+              import requests
+              import json
+              import sys
+
+              # --- CONFIG ---
+              # Service names valid inside the cluster
+              PAPERLESS_URL = "http://paperless-web.sentinel.svc.cluster.local"
+              PAPERLESS_TOKEN = "48f16b10207d9f0ef48d82d04756e7e5bbb9511e"
+              WEBUI_URL = "http://open-webui-service.sentinel.svc.cluster.local"
+              WEBUI_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU2YmY0NGRjLWM5MTgtNDAxMi1iMDNhLWYyODFjMWFlNzYzOSIsImV4cCI6MTc2ODMyNzI5MywianRpIjoiM2I4OWMyOGYtOWE1MC00NjZmLWFkM2YtMWM4Y2ZiNzUyZTk1In0.XaC0r8UVd1LAoKSVzCl1Ew2g6Quz-o-jgdTwNrLaXX0"
+              COLLECTION_NAME = "Paperless"
+
+              headers = {"Authorization": f"Bearer {WEBUI_KEY}"}
+              p_headers = {"Authorization": f"Token {PAPERLESS_TOKEN}"}
+
+              print(f"--- SYNC START: {COLLECTION_NAME} ---")
+
+              # 1. Get Collection ID
+              kb_id = None
+              try:
+                  resp = requests.get(f"{WEBUI_URL}/api/v1/knowledge/", headers=headers)
+                  for kb in resp.json():
+                      if kb["name"] == COLLECTION_NAME:
+                          kb_id = kb["id"]
+                          break
+                  if not kb_id:
+                      # If collection is missing, create it
+                      r = requests.post(f"{WEBUI_URL}/api/v1/knowledge/create", json={"name": COLLECTION_NAME, "description": "Auto-sync", "data": {}}, headers=headers)
+                      kb_id = r.json().get("id")
+              except Exception as e:
+                  print(f"Error checking WebUI: {e}")
+                  sys.exit(1)
+
+              # 2. Get Existing Files (to avoid duplicates)
+              existing_files = {}
+              try:
+                  r = requests.get(f"{WEBUI_URL}/api/v1/files/", headers=headers)
+                  for f in r.json():
+                      existing_files[f["filename"]] = f["id"]
+              except:
+                  pass
+
+              # 3. Fetch Paperless Docs
+              try:
+                  # Fetch last 50 docs
+                  r = requests.get(f"{PAPERLESS_URL}/api/documents/?ordering=-created&page_size=50", headers=p_headers)
+                  docs = r.json().get("results", [])
+              except Exception as e:
+                  print(f"Error checking Paperless: {e}")
+                  sys.exit(1)
+
+              # 4. Sync Logic
+              new_count = 0
+              for doc in docs:
+                  title = doc.get("title", "Untitled")
+                  fname = f"{title}.txt"
+                  content = doc.get("content", "")
+                  
+                  if not content: continue
+
+                  file_id = existing_files.get(fname)
+                  
+                  # Upload if missing
+                  if not file_id:
+                      files = {"file": (fname, content, "text/plain")}
+                      up = requests.post(f"{WEBUI_URL}/api/v1/files/", files=files, headers=headers)
+                      if up.status_code == 200:
+                          file_id = up.json()["id"]
+                          print(f"[UPLOADED] {fname}")
+                      else:
+                          print(f"[ERROR] Failed upload {fname}")
+                          continue
+                  
+                  # Link to Collection
+                  if file_id and kb_id:
+                      link = requests.post(f"{WEBUI_URL}/api/v1/knowledge/{kb_id}/file/add", json={"file_id": file_id}, headers=headers)
+                      if link.status_code == 200:
+                          new_count += 1
+
+              print(f"--- SYNC COMPLETE. Processed {new_count} items. ---")
+              '
           restartPolicy: OnFailure
-          schedulerName: default-scheduler
-          securityContext: {}
-          terminationGracePeriodSeconds: 30
-          volumes:
-          - configMap:
-              defaultMode: 420
-              name: sentinel-bridge-script
-            name: script-vol
-  schedule: '*/10 * * * *'
-  successfulJobsHistoryLimit: 1
-  suspend: false
-status:
-  active:
-  - apiVersion: batch/v1
-    kind: Job
-    name: sentinel-bridge-job-29431680
-    namespace: sentinel
-    resourceVersion: "63256"
-    uid: 4365d84a-c826-43f8-af55-00d7831b1fd9
-  lastScheduleTime: "2025-12-16T16:00:00Z"
-  lastSuccessfulTime: "2025-12-16T15:40:12Z"

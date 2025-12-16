@@ -359,7 +359,10 @@ items:
           - "4000"
           env:
           - name: GEMINI_API_KEY
-            value: AIzaSyByJRsgo1mj_Au4xTetxAYLj9RE1r2iXVo
+            valueFrom:
+              secretKeyRef:
+                name: litellm-secrets
+                key: GEMINI_API_KEY
           image: ghcr.io/berriai/litellm:main-latest
           imagePullPolicy: IfNotPresent
           name: litellm
