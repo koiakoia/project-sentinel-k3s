@@ -1,0 +1,183 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"ollama","namespace":"sentinel"},"spec":{"ports":[{"port":11434,"targetPort":11434}],"selector":{"app":"ollama"}}}
+    creationTimestamp: "2025-12-16T12:42:00Z"
+    name: ollama
+    namespace: sentinel
+    resourceVersion: "49045"
+    uid: 7832b0a5-b8f1-491c-9009-ecf92c856e77
+  spec:
+    clusterIP: 10.43.99.238
+    clusterIPs:
+    - 10.43.99.238
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 11434
+      protocol: TCP
+      targetPort: 11434
+    selector:
+      app: ollama
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"paperless-web","namespace":"sentinel"},"spec":{"ports":[{"nodePort":30081,"port":80,"targetPort":8000}],"selector":{"app":"paperless"},"type":"NodePort"}}
+    creationTimestamp: "2025-12-16T12:42:00Z"
+    name: paperless-web
+    namespace: sentinel
+    resourceVersion: "49110"
+    uid: cab6eeb2-bc41-48fc-aafc-027cb86bccd9
+  spec:
+    clusterIP: 10.43.177.184
+    clusterIPs:
+    - 10.43.177.184
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - nodePort: 30081
+      port: 80
+      protocol: TCP
+      targetPort: 8000
+    selector:
+      app: paperless
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"paperless-db","namespace":"sentinel"},"spec":{"ports":[{"port":5432}],"selector":{"app":"paperless-db"}}}
+    creationTimestamp: "2025-12-16T12:42:00Z"
+    name: paperless-db
+    namespace: sentinel
+    resourceVersion: "49074"
+    uid: 178c46c1-6a14-41da-bead-c91fa0769117
+  spec:
+    clusterIP: 10.43.58.213
+    clusterIPs:
+    - 10.43.58.213
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 5432
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      app: paperless-db
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"paperless-redis","namespace":"sentinel"},"spec":{"ports":[{"port":6379}],"selector":{"app":"paperless-redis"}}}
+    creationTimestamp: "2025-12-16T12:42:00Z"
+    name: paperless-redis
+    namespace: sentinel
+    resourceVersion: "49091"
+    uid: 427830d5-6177-45cc-a737-9cefc5983777
+  spec:
+    clusterIP: 10.43.89.96
+    clusterIPs:
+    - 10.43.89.96
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      app: paperless-redis
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"litellm-proxy","namespace":"sentinel"},"spec":{"ports":[{"port":4000}],"selector":{"app":"litellm"}}}
+    creationTimestamp: "2025-12-16T12:45:51Z"
+    name: litellm-proxy
+    namespace: sentinel
+    resourceVersion: "49367"
+    uid: caecb810-97d2-4209-81e4-ed4b9a42bcc3
+  spec:
+    clusterIP: 10.43.24.22
+    clusterIPs:
+    - 10.43.24.22
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 4000
+      protocol: TCP
+      targetPort: 4000
+    selector:
+      app: litellm
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"open-webui-service","namespace":"sentinel"},"spec":{"ports":[{"nodePort":30080,"port":80,"targetPort":8080}],"selector":{"app":"open-webui"},"type":"NodePort"}}
+    creationTimestamp: "2025-12-16T12:45:52Z"
+    name: open-webui-service
+    namespace: sentinel
+    resourceVersion: "49393"
+    uid: e203ac49-e465-4852-8076-8a42a1d08231
+  spec:
+    clusterIP: 10.43.23.159
+    clusterIPs:
+    - 10.43.23.159
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - nodePort: 30080
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: open-webui
+    sessionAffinity: None
+    type: NodePort
+  status:
+    loadBalancer: {}
+kind: List
+metadata:
+  resourceVersion: ""

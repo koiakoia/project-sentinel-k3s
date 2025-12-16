@@ -1,0 +1,133 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"ollama-pvc","namespace":"sentinel"},"spec":{"accessModes":["ReadWriteMany"],"resources":{"requests":{"storage":"50Gi"}},"storageClassName":"nfs-client"}}
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-subdir-external-provisioner
+      volume.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-subdir-external-provisioner
+    creationTimestamp: "2025-12-16T12:42:00Z"
+    finalizers:
+    - kubernetes.io/pvc-protection
+    name: ollama-pvc
+    namespace: sentinel
+    resourceVersion: "49649"
+    uid: 3b3103ae-c017-48db-84b8-140a4734c5ec
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 50Gi
+    storageClassName: nfs-client
+    volumeMode: Filesystem
+    volumeName: pvc-3b3103ae-c017-48db-84b8-140a4734c5ec
+  status:
+    accessModes:
+    - ReadWriteMany
+    capacity:
+      storage: 50Gi
+    phase: Bound
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"paperless-data-pvc","namespace":"sentinel"},"spec":{"accessModes":["ReadWriteMany"],"resources":{"requests":{"storage":"10Gi"}},"storageClassName":"nfs-client"}}
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-subdir-external-provisioner
+      volume.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-subdir-external-provisioner
+    creationTimestamp: "2025-12-16T13:30:22Z"
+    finalizers:
+    - kubernetes.io/pvc-protection
+    name: paperless-data-pvc
+    namespace: sentinel
+    resourceVersion: "52578"
+    uid: 481ee131-192a-4846-a062-ce69441be345
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 10Gi
+    storageClassName: nfs-client
+    volumeMode: Filesystem
+    volumeName: pvc-481ee131-192a-4846-a062-ce69441be345
+  status:
+    accessModes:
+    - ReadWriteMany
+    capacity:
+      storage: 10Gi
+    phase: Bound
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"paperless-media-pvc","namespace":"sentinel"},"spec":{"accessModes":["ReadWriteMany"],"resources":{"requests":{"storage":"20Gi"}},"storageClassName":"nfs-client"}}
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-subdir-external-provisioner
+      volume.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-subdir-external-provisioner
+    creationTimestamp: "2025-12-16T12:42:00Z"
+    finalizers:
+    - kubernetes.io/pvc-protection
+    name: paperless-media-pvc
+    namespace: sentinel
+    resourceVersion: "49667"
+    uid: d0908fe3-6c81-4c27-ba31-eb16a17a7b1d
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 20Gi
+    storageClassName: nfs-client
+    volumeMode: Filesystem
+    volumeName: pvc-d0908fe3-6c81-4c27-ba31-eb16a17a7b1d
+  status:
+    accessModes:
+    - ReadWriteMany
+    capacity:
+      storage: 20Gi
+    phase: Bound
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"PersistentVolumeClaim","metadata":{"annotations":{},"name":"webui-pvc","namespace":"sentinel"},"spec":{"accessModes":["ReadWriteMany"],"resources":{"requests":{"storage":"5Gi"}},"storageClassName":"nfs-client"}}
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-subdir-external-provisioner
+      volume.kubernetes.io/storage-provisioner: cluster.local/nfs-client-nfs-subdir-external-provisioner
+    creationTimestamp: "2025-12-16T12:44:17Z"
+    finalizers:
+    - kubernetes.io/pvc-protection
+    name: webui-pvc
+    namespace: sentinel
+    resourceVersion: "49677"
+    uid: c21393fc-fb1d-4881-bf92-c689d0b79627
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 5Gi
+    storageClassName: nfs-client
+    volumeMode: Filesystem
+    volumeName: pvc-c21393fc-fb1d-4881-bf92-c689d0b79627
+  status:
+    accessModes:
+    - ReadWriteMany
+    capacity:
+      storage: 5Gi
+    phase: Bound
+kind: List
+metadata:
+  resourceVersion: ""
