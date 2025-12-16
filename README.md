@@ -4,7 +4,7 @@ graph TD
     classDef private fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,stroke-dasharray: 5 5;
     classDef public fill:#fbe9e7,stroke:#d84315,stroke-width:2px;
     classDef logic fill:#fff9c4,stroke:#fbc02d,stroke-width:2px;
-    classDef hardware fill:#424242,stroke:#000,stroke-width:2px,color:#fff;
+    classDef hardware fill:#424242,stroke:#000,color:#fff;
 
     %% --- The User Layer ---
     subgraph Interface [Frontend Layer]
