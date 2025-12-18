@@ -31,3 +31,4 @@ Run these commands first to label the hardware:
 # Label the Nodes
 kubectl label node node-gpu special.gpu=nvidia
 kubectl label node node-compute special.cpu=avx512
+'''
